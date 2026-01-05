@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instellingen - Kasboek Debutade</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .hero-banner {
+            position: relative;
+            margin: -10px -10px 20px -10px;
+            padding: 40px 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            text-align: center;
+            background-image: linear-gradient(120deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55)),
+                              url('{{ url_for("static", filename="Header Debutade.jpg") }}');
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        .hero-banner h1 {
+            color: #1f2d3d;
+            margin: 0 0 6px 0;
+            font-size: 28px;
+        }
+
+        .hero-banner p {
+            color: #34495e;
+            margin-top: 8px;
+        }
+        
+        .hero-banner .user-info {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+
+        .hero-banner .nav-buttons {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .hero-banner .nav-buttons a,
+        .hero-banner .nav-buttons button {
+            font-size: 12px;
+            padding: 6px 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .hero-banner .nav-buttons a:hover,
+        .hero-banner .nav-buttons button:hover {
+            background-color: #2980b9;
+        }
+        
+        .page-title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #8A2E1E;
+            border-radius: 5px;
+        }
+
+        .page-title h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .settings-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .settings-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .setting-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-label {
+            color: #666;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .setting-value {
+            color: #333;
+            padding: 10px;
+            background-color: white;
+            border-radius: 4px;
+            border: 1px solid #ecf0f1;
+            word-break: break-all;
+        }
+        
+        .button-group {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        button, a.button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .info-text {
+            color: #7f8c8d;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .tag {
+            background-color: #3498db;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .page-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #7f8c8d;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero-banner">
+            <div class="nav-buttons">
+                <a href="/">← Terug naar Startpagina</a>
+            </div>
+            <div class="user-info">Vandaag: {{ current_date }} | Gebruiker: {{ current_user }}</div>
+            <h1>Kasboek Debutade</h1>
+            <p>Financiële transactie beheerder</p>
+        </div>
+        <div class="page-title">
+            <h1>⚙️ Instellingen</h1>
+        </div>
+        
+        <div class="settings-section">
+            <h2>Excel Instellingen</h2>
+            <div class="setting-item">
+                <span class="setting-label">Huidig Excel bestand:</span>
+                <div class="setting-value" id="excelCurrentPath">
+                    {% if settings.excel_file_path %}
+                        {{ settings.excel_file_path }}
+                    {% else %}
+                        <span style="color: #e74c3c; font-style: italic;">Geen bestand ingesteld</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Kies bestaand Excel bestand (volledig pad):</span>
+                <form id="excelPathForm">
+                    <input type="text" id="excelPathInput" name="excel_path" placeholder="Bijv. C:\\Users\\...\\kas.xlsx" style="width:100%; padding:10px; border:1px solid #bdc3c7; border-radius:4px;" value="{{ settings.excel_file_path }}">
+                    <p class="info-text">Het opgegeven pad wordt direct gebruikt. Bestand moet bestaan en de juiste kolom headers bevatten.</p>
+                    <div class="button-group" style="justify-content:flex-start; margin-top:10px; gap:10px;">
+                        <button type="submit" class="btn-primary">Opslaan en gebruiken</button>
+                    </div>
+                </form>
+                <div id="excelUploadFeedback" class="info-text" style="margin-top:8px;"></div>
+            <div class="setting-item">
+                <span class="setting-label">Excel Sheet Naam:</span>
+                <div class="setting-value" id="sheetNameDisplay">{{ settings.sheet_name }}</div>
+                <form id="sheetNameForm" style="margin-top:10px;">
+                    <input type="text" id="sheetNameInput" name="sheet_name" placeholder="Bijv. Transacties" style="width:100%; padding:10px; border:1px solid #bdc3c7; border-radius:4px;" value="{{ settings.sheet_name }}">
+                    <p class="info-text">Voer de sheet naam in die bestaat in het Excel bestand.</p>
+                    <div class="button-group" style="justify-content:flex-start; margin-top:10px; gap:10px;">
+                        <button type="submit" class="btn-primary">Opslaan</button>
+                    </div>
+                </form>
+                <div id="sheetNameFeedback" class="info-text" style="margin-top:8px;"></div>
+            </div>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h2>Systeem Instellingen</h2>
+            <div class="setting-item">
+                <span class="setting-label">Backup Directory:</span>
+                <div class="setting-value" id="backupDirDisplay">{{ settings.backup_directory }}</div>
+                <form id="backupDirForm" style="margin-top:10px;">
+                    <input type="text" id="backupDirInput" name="backup_dir" placeholder="Bijv. C:\\Users\\...\\backups" style="width:100%; padding:10px; border:1px solid #bdc3c7; border-radius:4px;" value="{{ settings.backup_directory }}">
+                    <p class="info-text">Volledig pad naar backup directory. Directory hoeft niet te bestaan.</p>
+                    <div class="button-group" style="justify-content:flex-start; margin-top:10px; gap:10px;">
+                        <button type="submit" class="btn-primary">Opslaan</button>
+                    </div>
+                </form>
+                <div id="backupDirFeedback" class="info-text" style="margin-top:8px;"></div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Log Directory:</span>
+                <div class="setting-value" id="logDirDisplay">{{ settings.log_directory }}</div>
+                <form id="logDirForm" style="margin-top:10px;">
+                    <input type="text" id="logDirInput" name="log_dir" placeholder="Bijv. C:\\Users\\...\\logs" style="width:100%; padding:10px; border:1px solid #bdc3c7; border-radius:4px;" value="{{ settings.log_directory }}">
+                    <p class="info-text">Volledig pad naar log directory. Directory hoeft niet te bestaan.</p>
+                    <div class="button-group" style="justify-content:flex-start; margin-top:10px; gap:10px;">
+                        <button type="submit" class="btn-primary">Opslaan</button>
+                    </div>
+                </form>
+                <div id="logDirFeedback" class="info-text" style="margin-top:8px;"></div>
+            </div>
+            <div class="setting-item">
+                <span class="setting-label">Log Level:</span>
+                <div class="setting-value" id="logLevelDisplay">{{ settings.log_level }}</div>
+                <form id="logLevelForm" style="margin-top:10px;">
+                    <select id="logLevelSelect" name="log_level" style="width:100%; padding:10px; border:1px solid #bdc3c7; border-radius:4px;">
+                        {% for level in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] %}
+                        <option value="{{ level }}" {% if settings.log_level|upper == level %}selected{% endif %}>{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="info-text">Kies het gewenste logniveau. Hoger niveau = minder detail.</p>
+                    <div class="button-group" style="justify-content:flex-start; margin-top:10px; gap:10px;">
+                        <button type="submit" class="btn-primary">Opslaan</button>
+                    </div>
+                </form>
+                <div id="logLevelFeedback" class="info-text" style="margin-top:8px;"></div>
+            </div>
+            <div class="setting-item">
+        </div>
+        
+        <div class="settings-section">
+            <h2>Categorieën (Tags)</h2>
+            <div class="tags-list">
+                {% for tag in settings.tags %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="page-footer">
+            Kasboek Debutade v2.0 - Web Applicatie
+        </div>
+    </div>
+    <script>
+        document.getElementById('excelPathForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feedback = document.getElementById('excelUploadFeedback');
+            feedback.textContent = 'Controleren...';
+
+            const path = document.getElementById('excelPathInput').value.trim();
+            if (!path) {
+                feedback.textContent = 'Geef een pad op naar een .xlsx bestand';
+                return;
+            }
+
+            fetch('/settings/excel-file-path', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ excel_file_path: path })
+            })
+            .then(res => res.json().then(body => ({ status: res.status, body })))
+            .then(({ status, body }) => {
+                if (status === 200 && body.success) {
+                    feedback.textContent = `Ingesteld: ${body.excel_file_path}`;
+                    document.getElementById('excelCurrentPath').textContent = body.excel_file_path;
+                } else {
+                    feedback.textContent = body.message || 'Instellen mislukt';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                feedback.textContent = 'Fout bij instellen';
+            });
+        });
+
+        document.getElementById('backupDirForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feedback = document.getElementById('backupDirFeedback');
+            feedback.textContent = 'Opslaan...';
+
+            const path = document.getElementById('backupDirInput').value.trim();
+            if (!path) {
+                feedback.textContent = 'Geef een pad op naar backup directory';
+                return;
+            }
+
+            fetch('/settings/backup-directory', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ backup_directory: path })
+            })
+            .then(res => res.json().then(body => ({ status: res.status, body })))
+            .then(({ status, body }) => {
+                if (status === 200 && body.success) {
+                    feedback.textContent = `Opgeslagen: ${body.backup_directory}`;
+                    document.getElementById('backupDirDisplay').textContent = body.backup_directory;
+                } else {
+                    feedback.textContent = body.message || 'Opslaan mislukt';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                feedback.textContent = 'Fout bij opslaan';
+            });
+        });
+
+        document.getElementById('logDirForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feedback = document.getElementById('logDirFeedback');
+            feedback.textContent = 'Opslaan...';
+
+            const path = document.getElementById('logDirInput').value.trim();
+            if (!path) {
+                feedback.textContent = 'Geef een pad op naar log directory';
+                return;
+            }
+
+            fetch('/settings/log-directory', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ log_directory: path })
+            })
+            .then(res => res.json().then(body => ({ status: res.status, body })))
+            .then(({ status, body }) => {
+                if (status === 200 && body.success) {
+                    feedback.textContent = `Opgeslagen: ${body.log_directory}`;
+                    document.getElementById('logDirDisplay').textContent = body.log_directory;
+                } else {
+                    feedback.textContent = body.message || 'Opslaan mislukt';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                feedback.textContent = 'Fout bij opslaan';
+            });
+        });
+
+        document.getElementById('logLevelForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feedback = document.getElementById('logLevelFeedback');
+            feedback.textContent = 'Opslaan...';
+
+            const level = document.getElementById('logLevelSelect').value;
+
+            fetch('/settings/log-level', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ log_level: level })
+            })
+            .then(res => res.json().then(body => ({ status: res.status, body })))
+            .then(({ status, body }) => {
+                if (status === 200 && body.success) {
+                    feedback.textContent = `Opgeslagen: ${body.log_level}`;
+                    document.getElementById('logLevelDisplay').textContent = body.log_level;
+                } else {
+                    feedback.textContent = body.message || 'Opslaan mislukt';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                feedback.textContent = 'Fout bij opslaan';
+            });
+        });
+
+        document.getElementById('sheetNameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feedback = document.getElementById('sheetNameFeedback');
+            feedback.textContent = 'Valideren...';
+
+            const sheetName = document.getElementById('sheetNameInput').value.trim();
+            if (!sheetName) {
+                feedback.textContent = 'Sheet naam is verplicht';
+                return;
+            }
+
+            fetch('/settings/excel-sheet-name', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sheet_name: sheetName })
+            })
+            .then(res => res.json().then(body => ({ status: res.status, body })))
+            .then(({ status, body }) => {
+                if (status === 200 && body.success) {
+                    feedback.textContent = `Opgeslagen: ${body.sheet_name}`;
+                    document.getElementById('sheetNameDisplay').textContent = body.sheet_name;
+                } else {
+                    feedback.textContent = body.message || 'Opslaan mislukt';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                feedback.textContent = 'Fout bij opslaan';
+            });
+        });
+    </script>
+</body>
+</html>
