@@ -498,6 +498,65 @@
             color: white;
         }
         
+        .recommendation-box {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #e8f4f8;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .recommendation-box.active {
+            display: block;
+        }
+        
+        .recommendation-box h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .recommendation-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .recommendation-item {
+            background-color: white;
+            border: 1px solid #3498db;
+            padding: 6px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #2c3e50;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .recommendation-item:hover {
+            background-color: #3498db;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .recommendation-score {
+            font-size: 11px;
+            opacity: 0.7;
+            font-weight: bold;
+        }
+        
+        .recommendation-loading {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
         .no-match {
             padding: 10px;
             color: #7f8c8d;
@@ -552,6 +611,12 @@
                     <div class="form-group">
                         <label for="mededelingen">Mededeling *</label>
                         <input type="text" id="mededelingen" name="mededelingen" placeholder="Mededeling van de transactie" required>
+                        <div id="recommendationBox" class="recommendation-box">
+                            <h4>💡 Aanbevolen categorieën:</h4>
+                            <div id="recommendationItems" class="recommendation-items">
+                                <div class="recommendation-loading">Type om aanbevelingen te zien...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -627,7 +692,81 @@
         document.addEventListener('DOMContentLoaded', function() {
             renderSessionTransactions();
             setupAutocomplete();
+            setupCategoryRecommendations();
         });
+        
+        let recommendationTimeout = null;
+        
+        function setupCategoryRecommendations() {
+            const mededelingenInput = document.getElementById('mededelingen');
+            const recommendationBox = document.getElementById('recommendationBox');
+            const recommendationItems = document.getElementById('recommendationItems');
+            
+            mededelingenInput.addEventListener('input', function() {
+                const description = this.value.trim();
+                
+                // Clear previous timeout
+                if (recommendationTimeout) {
+                    clearTimeout(recommendationTimeout);
+                }
+                
+                // Hide recommendations if input is too short
+                if (description.length < 3) {
+                    recommendationBox.classList.remove('active');
+                    return;
+                }
+                
+                // Show loading state
+                recommendationBox.classList.add('active');
+                recommendationItems.innerHTML = '<div class="recommendation-loading">Aanbevelingen laden...</div>';
+                
+                // Debounce API call
+                recommendationTimeout = setTimeout(() => {
+                    fetch('/api/recommend-category', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ description: description })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.recommendations && data.recommendations.length > 0) {
+                            // Show recommendations
+                            recommendationItems.innerHTML = data.recommendations.map(rec => {
+                                const scorePercent = Math.round(rec.score * 100);
+                                return `<div class="recommendation-item" onclick="selectRecommendedCategory('${rec.category.replace(/'/g, "\\'")}')">
+                                    <span>${rec.category}</span>
+                                    <span class="recommendation-score">${scorePercent}%</span>
+                                </div>`;
+                            }).join('');
+                        } else {
+                            recommendationItems.innerHTML = '<div class="recommendation-loading">Geen aanbevelingen gevonden</div>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching recommendations:', error);
+                        recommendationItems.innerHTML = '<div class="recommendation-loading">Fout bij laden aanbevelingen</div>';
+                    });
+                }, 500); // Wait 500ms after user stops typing
+            });
+            
+            // Hide recommendations when clicking outside
+            document.addEventListener('click', function(e) {
+                if (e.target !== mededelingenInput && !recommendationBox.contains(e.target)) {
+                    // Don't hide immediately to allow clicking on recommendations
+                    // recommendationBox.classList.remove('active');
+                }
+            });
+        }
+        
+        function selectRecommendedCategory(category) {
+            document.getElementById('tag').value = category;
+            document.getElementById('tag_hidden').value = category;
+            document.getElementById('recommendationBox').classList.remove('active');
+            // Focus on the tag field to show the selected value
+            document.getElementById('tag').focus();
+        }
         
         function setupAutocomplete() {
             const tagInput = document.getElementById('tag');

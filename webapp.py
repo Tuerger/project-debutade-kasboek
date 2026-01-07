@@ -444,6 +444,79 @@ def add_transaction():
         logging.error(f"Fout bij toevoegen transactie: {str(e)}")
         return jsonify({'success': False, 'message': f'Fout: {str(e)}'}), 500
 
+@app.route('/api/recommend-category', methods=['POST'])
+def recommend_category():
+    """Geef categorie aanbevelingen op basis van de mededelingen tekst"""
+    try:
+        data = request.get_json() or {}
+        description = str(data.get('description', '')).strip().lower()
+        
+        if not description or len(description) < 3:
+            return jsonify({'recommendations': []})
+        
+        # Laad de test set
+        test_set_path = os.path.join('static', 'category_test_set.xlsx')
+        if not os.path.exists(test_set_path):
+            logging.warning("Category test set niet gevonden")
+            return jsonify({'recommendations': []})
+        
+        wb = load_workbook(test_set_path)
+        sheet = wb.active
+        
+        # Verzamel alle mededelingen en categorieën
+        training_data = []
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            if row[2] and row[3]:  # Mededelingen en Tag kolommen
+                training_data.append({
+                    'description': str(row[2]).lower(),
+                    'category': str(row[3])
+                })
+        
+        wb.close()
+        
+        # Bereken similarity scores
+        def calculate_similarity(text1, text2):
+            """Simpele similarity based op woord overlap"""
+            words1 = set(text1.split())
+            words2 = set(text2.split())
+            if not words1 or not words2:
+                return 0
+            intersection = words1.intersection(words2)
+            union = words1.union(words2)
+            return len(intersection) / len(union)
+        
+        # Vind matches
+        matches = []
+        for item in training_data:
+            score = calculate_similarity(description, item['description'])
+            if score > 0:
+                matches.append({
+                    'category': item['category'],
+                    'score': score,
+                    'example': item['description']
+                })
+        
+        # Sorteer op score en groepeer per categorie
+        matches.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Houd unieke categorieën bij met hoogste score
+        seen_categories = {}
+        for match in matches:
+            cat = match['category']
+            if cat not in seen_categories or match['score'] > seen_categories[cat]['score']:
+                seen_categories[cat] = match
+        
+        # Neem top 5 aanbevelingen
+        recommendations = sorted(seen_categories.values(), 
+                               key=lambda x: x['score'], 
+                               reverse=True)[:5]
+        
+        return jsonify({'recommendations': recommendations})
+        
+    except Exception as e:
+        logging.error(f"Fout bij category recommendation: {str(e)}")
+        return jsonify({'recommendations': []})
+
 @app.route('/get_total')
 def get_total():
     """Haal het huidige totaal op"""
